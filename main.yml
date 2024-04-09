@@ -1,0 +1,36 @@
+#Deploy Node project on AWS S3 Bucket | 
+
+name: Deploy React App to AWS S3
+
+on:
+  push:
+    branches:
+      - stage 
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '21' #your node-vertion
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build
+        run: |
+          npm run build
+
+      - name: Deploy
+        run: |
+            aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }} 
+            aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws configure set region us-east-1  
+            aws s3 sync ./ s3://dfh-web-dev   #metion the build derectory after ./
